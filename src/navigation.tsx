@@ -1,0 +1,38 @@
+import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
+import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
+import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
+
+export type NavigationItem = {
+  title: string;
+  path: string;
+  icon: typeof DashboardRoundedIcon;
+  matchPrefix?: boolean;
+};
+
+export const navigationItems: NavigationItem[] = [
+  {
+    title: "Dashboard",
+    path: "/dashboard",
+    icon: DashboardRoundedIcon
+  },
+  {
+    title: "Patients",
+    path: "/patients",
+    icon: GroupsRoundedIcon,
+    matchPrefix: true
+  },
+  {
+    title: "History",
+    path: "/payment-history",
+    icon: ReceiptLongRoundedIcon,
+    matchPrefix: true
+  }
+];
+
+export function getPageTitle(pathname: string) {
+  if (pathname.startsWith("/patients/add")) return "New patient";
+  if (pathname.includes("/edit")) return "Edit patient";
+  if (pathname.startsWith("/patients")) return "Patients";
+  if (pathname.startsWith("/payment-history")) return "Payment history";
+  return "Dashboard";
+}
