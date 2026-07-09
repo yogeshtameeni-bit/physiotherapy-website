@@ -4,9 +4,12 @@ import PatientsPage from "./pages/PatientsPage";
 import PatientFormPage from "./pages/PatientFormPage";
 import PaymentHistoryPage from "./pages/PaymentHistoryPage";
 import MainLayout from "./layouts/mainLayout";
+
+const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
+
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Navigate to="dashboard" replace />} />
