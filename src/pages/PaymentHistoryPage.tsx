@@ -223,7 +223,7 @@ function PaymentHistoryPage() {
     setSavingSitting(true);
     setError("");
     try {
-      await api.post("Patients/SaveSaveSittings", {
+      await api.post("Patients/SaveSittings", {
         patientId: selectedPatient.id,
         Sitting_Date: sittingsDate,
         Remarks: sittingsRemarks
