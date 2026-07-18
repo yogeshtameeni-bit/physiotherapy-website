@@ -4,7 +4,7 @@ const api = axios.create({
 
   // baseURL: "http://localhost:5151/api"
   //baseURL: "http://localhost:8085/api" // IIS
-  baseURL: "https://www.niyatphysio-api.shop/api"
+  baseURL: "https://niyatphysio-api.shop/api"
 
 });
 
