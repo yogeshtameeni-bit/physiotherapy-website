@@ -28,7 +28,8 @@ const emptyPatient: PatientFormData = {
   complain: "",
   diagnosis: "",
   treatmentPlan: "",
-  branchName: ""
+  branchName: "",
+  isInquiryConvertedToPatient:true
 };
 
 export default function PatientFormPage() {
@@ -77,7 +78,8 @@ export default function PatientFormPage() {
           complain: patient.complain,
           diagnosis: patient.diagnosis,
           treatmentPlan: patient.treatmentPlan,
-          branchName: patient.branchName
+          branchName: patient.branchName,
+          isInquiryConvertedToPatient: patient.isInquiryConvertedToPatient
         });
       } catch {
         setError("Could not load the patient. Please try again.");
@@ -141,7 +143,7 @@ export default function PatientFormPage() {
       };
 
       if (isEditing) {
-        await api.put(`/Patients/${id}`, { id: Number(id), ...payload });
+        await api.post(`/Patients/${id}`, { id: Number(id), ...payload });
       } else {
         await api.post("/Patients", payload);
       }

@@ -244,7 +244,7 @@ function PaymentHistoryPage() {
     setDeletingId(paymentHistoryId);
     setError("");
     try {
-      await api.delete(`Patients/DeletePaymentHistory/${paymentHistoryId}`);
+      await api.patch(`Patients/DeletePaymentHistory/${paymentHistoryId}`);
       await loadPaymentHistory(selectedPatient?.id);
     } catch (deleteError) {
       console.error("Error deleting payment entry:", deleteError);
