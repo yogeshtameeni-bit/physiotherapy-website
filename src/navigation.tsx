@@ -1,6 +1,7 @@
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
 import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
+import NoteRoundedIcon from "@mui/icons-material/NoteRounded";
 
 export type NavigationItem = {
   title: string;
@@ -14,6 +15,11 @@ export const navigationItems: NavigationItem[] = [
     title: "Dashboard",
     path: "/dashboard",
     icon: DashboardRoundedIcon
+  },
+  {
+    title: "Inquiries",
+    path: "/inquiries",
+    icon: NoteRoundedIcon
   },
   {
     title: "Patients",
