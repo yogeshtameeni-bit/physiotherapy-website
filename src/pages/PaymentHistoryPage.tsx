@@ -51,6 +51,7 @@ function PaymentHistoryPage() {
   const [treatment_sortDirection, setTreatment_SortDirection] = useState<SortDirection>("desc");
   const [treatment_sortField, setTreatment_setSortField] = useState<Treatment_SortField>("sitting_Date");
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [deleting_Treatment_sittings_Id, setDeleting_Treatment_sittings_Id] = useState<number | null>(null);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [sittingsDialogOpen, setSittingsDialogOpen] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState("");
@@ -249,6 +250,22 @@ function PaymentHistoryPage() {
     } catch (deleteError) {
       console.error("Error deleting payment entry:", deleteError);
       setError("Could not delete the payment entry. Please try again.");
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
+    async function deleteSittingEntry(Treatment_sittings_Id: number) {
+    if (!window.confirm(`Delete sitting entry?`)) return;
+      
+    setDeleting_Treatment_sittings_Id(Treatment_sittings_Id);
+    setError("");
+    try {
+      await api.patch(`Patients/DeleteSittingHistory/${Treatment_sittings_Id}`);
+      await loadSittingsHistory(selectedPatient?.id);
+    } catch (deleteError) {
+      console.error("Error deleting sittings entry:", deleteError);
+      setError("Could not delete the sittings entry. Please try again.");
     } finally {
       setDeletingId(null);
     }
@@ -488,9 +505,9 @@ function PaymentHistoryPage() {
                   <Button
                     size="small"
                     color="error"
-                    onClick={() => deletePaymentEntry(ph.treatment_sittings_Id)}
-                    disabled={deletingId === ph.treatment_sittings_Id}>
-                    {deletingId === ph.treatment_sittings_Id ? "Deleting..." : "Delete"}
+                    onClick={() => deleteSittingEntry(ph.treatment_sittings_Id)}
+                    disabled={deleting_Treatment_sittings_Id === ph.treatment_sittings_Id}>
+                    {deleting_Treatment_sittings_Id === ph.treatment_sittings_Id ? "Deleting..." : "Delete"}
                   </Button>
                 </TableCell>
               </TableRow>
