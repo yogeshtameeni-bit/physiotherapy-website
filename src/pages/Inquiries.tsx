@@ -178,7 +178,7 @@ function InquiriesPage() {
             variant="contained"
             color="secondary"
             startIcon={<AddRoundedIcon />}
-            onClick={() => navigate("/patients/add")}
+            onClick={() => navigate("/inquiries/add")}
             sx={{ bgcolor: "#fff", color: "primary.main", "&:hover": { bgcolor: "#fff7ed" } }}
           >
             Add Inquiry
@@ -301,7 +301,7 @@ function InquiriesPage() {
                 <Button
                   size="small"
                   variant="contained"
-                  onClick={() => navigate(`/patients/${patient.id}/edit`)}
+                  onClick={() => navigate(`/inquiries/${patient.id}/edit`)}
                   sx={{ minWidth: 0 }}>
                   Edit
                 </Button>
@@ -320,7 +320,7 @@ function InquiriesPage() {
           {visiblePatients.length === 0 && (
             <Paper sx={{ p: 4, borderRadius: 2, textAlign: "center" }}>
               <Typography color="text.secondary">
-                {patients.length === 0 ? "No patients have been added yet." : "No patients match these filters."}
+                {patients.length === 0 ? "No inquiries have been added yet." : "No inquiries match these filters."}
               </Typography>
             </Paper>
           )}

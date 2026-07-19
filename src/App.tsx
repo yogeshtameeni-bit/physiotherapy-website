@@ -3,7 +3,8 @@ import DashboardPage from "./pages/DashboardPage";
 import PatientsPage from "./pages/PatientsPage";
 import PatientFormPage from "./pages/PatientFormPage";
 import PaymentHistoryPage from "./pages/PaymentHistoryPage";
-import InquiriesPage from "./pages/inquiries";
+import InquiriesPage from "./pages/Inquiries";
+import InquiryFormPage from "./pages/InquiryFormPage";
 import MainLayout from "./layouts/mainLayout";
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
@@ -15,7 +16,11 @@ function App() {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
+          
           <Route path="inquiries" element={<InquiriesPage />} />
+          <Route path="inquiries/add" element={<InquiryFormPage />} />
+          <Route path="inquiries/:id/edit" element={<InquiryFormPage />} />
+
           <Route path="patients" element={<PatientsPage />} />
           <Route path="patients/add" element={<PatientFormPage />} />
           <Route path="patients/:id/edit" element={<PatientFormPage />} />

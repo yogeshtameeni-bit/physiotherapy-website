@@ -17,6 +17,7 @@ export interface Patient {
 
   complain:string;
   diagnosis:string;
+  isInquiryConvertedToPatient: boolean;
   treatmentPlan:string;
   branchName: string;
 }
