@@ -139,7 +139,8 @@ export default function PatientFormPage() {
         complain: form.complain,
         diagnosis: form.diagnosis,
         treatmentPlan: form.treatmentPlan,
-        isActive: true
+        isActive: true,
+        isInquiryConvertedToPatient: false
       };
 
       if (isEditing) {

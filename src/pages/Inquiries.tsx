@@ -50,11 +50,11 @@ function InquiriesPage() {
 
   async function loadPatients() {
     try {
-      const response = await api.get<Patient[]>("/Patients");
+      const response = await api.get<Patient[]>("/Inquiry");
       setPatients(response.data);
     } catch (loadError) {
-      console.error("Error fetching patients:", loadError);
-      setError("Could not load patients. Please try again.");
+      console.error("Error fetching inquiries:", loadError);
+      setError("Could not load inquiries. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -124,7 +124,7 @@ function InquiriesPage() {
     setDeletingId(patient.id);
     setError("");
     try {
-      await api.delete(`/Patients/${patient.id}`);
+      await api.patch(`/Patients/${patient.id}`);
       await loadPatients();
     } catch (deleteError) {
       console.error("Error deleting patient:", deleteError);
@@ -356,7 +356,7 @@ function InquiriesPage() {
                   <TableCell>{patient.gender || "-"}</TableCell>
                   <TableCell>{patient.age}</TableCell>
                   <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
-                    <Button size="small" onClick={() => navigate(`/patients/${patient.id}/edit`)}>
+                    <Button size="small" onClick={() => navigate(`/inquiries/${patient.id}/edit`)}>
                       Edit
                     </Button>
                     <Button

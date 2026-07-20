@@ -142,15 +142,16 @@ export default function InquiryFormPage() {
         diagnosis: form.diagnosis,
         diagnosisConfirmed: form.isInquiryConvertedToPatient,
         treatmentPlan: form.treatmentPlan,
-        isActive: true
+        isActive: true,
+        isInquiryConvertedToPatient: form.isInquiryConvertedToPatient
       };
 
       if (isEditing) {
-        await api.put(`/Patients/${id}`, { id: Number(id), ...payload });
+        await api.post(`/Patients/${id}`, { id: Number(id), ...payload });
       } else {
         await api.post("/Patients", payload);
       }
-      navigate("/patients");
+      navigate("/inquiries");
     } catch (saveError) {
       console.error(saveError);
       setError(`Could not ${isEditing ? "update" : "add"} the inquiry. Please check the details and try again.`);
