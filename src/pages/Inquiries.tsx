@@ -124,7 +124,7 @@ function InquiriesPage() {
     setDeletingId(patient.id);
     setError("");
     try {
-      await api.patch(`/Patients/${patient.id}`);
+      await api.patch(`/Patients/DeletePatient/${patient.id}`);
       await loadPatients();
     } catch (deleteError) {
       console.error("Error deleting patient:", deleteError);

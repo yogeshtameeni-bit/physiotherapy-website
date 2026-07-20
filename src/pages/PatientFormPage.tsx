@@ -80,6 +80,7 @@ export default function PatientFormPage() {
           treatmentPlan: patient.treatmentPlan,
           branchName: patient.branchName,
           isInquiryConvertedToPatient: patient.isInquiryConvertedToPatient
+          // ,modifiedDate: patient.modifiedDate
         });
       } catch {
         setError("Could not load the patient. Please try again.");
@@ -140,7 +141,7 @@ export default function PatientFormPage() {
         diagnosis: form.diagnosis,
         treatmentPlan: form.treatmentPlan,
         isActive: true,
-        isInquiryConvertedToPatient: false
+        isInquiryConvertedToPatient: form.isInquiryConvertedToPatient
       };
 
       if (isEditing) {

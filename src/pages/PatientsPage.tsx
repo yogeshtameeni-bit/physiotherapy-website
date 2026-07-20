@@ -126,7 +126,7 @@ function PatientsPage() {
     setDeletingId(patient.id);
     setError("");
     try {
-      await api.delete(`/Patients/${patient.id}`);
+      await api.patch(`/Patients/DeletePatient/${patient.id}`);
       await loadPatients();
     } catch (deleteError) {
       console.error("Error deleting patient:", deleteError);
