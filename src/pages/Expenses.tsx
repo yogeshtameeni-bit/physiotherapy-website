@@ -13,8 +13,11 @@ import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import { useEffect, useState } from "react";
 import api from "../services/api";
 import type { Expenses } from "../types/Expenses";
 
@@ -36,11 +39,15 @@ function ExpensesPage() {
   const [gender, setGender] = useState("");
   const [sortField, setSortField] = useState<SortField>("paymentDate");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
-  const navigate = useNavigate();
+  const [paymentAmount, setPaymentAmount] = useState("");
+  const [paymentDate, setPaymentDate] = useState(new Date().toISOString().slice(0, 10));
+  const [description, setDescription] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   async function loadExpenses() {
     try {
-      const response = await api.get<Expenses[]>(`/Expenses`);
+      const response = await api.get<Expenses[]>(`/Expense`);
       setExpenses(response.data || []);
     } catch (loadError) {
       console.error("Error fetching expenses:", loadError);
@@ -65,12 +72,12 @@ function ExpensesPage() {
   }
 
   async function deleteExpense(expense: Expenses) {
-    if (!window.confirm(`Delete ${expense.Description}?`)) return;
+    if (!window.confirm(`Delete ${expense.description}?`)) return;
 
     setDeletingId(expense.expenseId);
     setError("");
     try {
-      await api.patch(`/Expenses/DeleteExpense/${expense.expenseId}`);
+      await api.patch(`/Expense/DeleteExpense/${expense.expenseId}`);
       await loadExpenses();
     } catch (deleteError) {
       console.error("Error deleting expense:", deleteError);
@@ -78,6 +85,14 @@ function ExpensesPage() {
     } finally {
       setDeletingId(null);
     }
+  }
+
+  function openDialog() {
+    setError("");
+    setPaymentAmount("");
+    setPaymentDate(new Date().toISOString().slice(0, 10));
+    setDescription("");
+    setDialogOpen(true);
   }
 
   const sortedData = [...expenses].sort((a, b) => {
@@ -90,7 +105,32 @@ function ExpensesPage() {
     const dateA = new Date(a.paymentDate).getTime();
     const dateB = new Date(b.paymentDate).getTime();
     return (dateA - dateB) * direction;
-  });
+  })
+  
+  async function saveRecord() {
+    const amountValue = Number(paymentAmount);
+    if (!paymentAmount || Number.isNaN(amountValue) || amountValue <= 0 || amountValue < 0) {
+      setError("Please enter a valid amount.");
+      return;
+    }
+
+    setSaving(true);
+    setError("");
+    try {
+      await api.post("Expense", {
+        Amount: amountValue,
+        PaymentDate:paymentDate,
+        Description:description
+      });
+      setDialogOpen(false);
+      loadExpenses();
+    } catch (saveError) {
+      console.error("Error saving expense record:", saveError);
+      setError("Could not add the expense record. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <Box>
@@ -134,7 +174,7 @@ function ExpensesPage() {
             variant="contained"
             color="secondary"
             startIcon={<AddRoundedIcon />}
-            onClick={() => navigate("/inquiries/add")}
+            onClick={openDialog}
             sx={{ bgcolor: "#fff", color: "primary.main", "&:hover": { bgcolor: "#fff7ed" } }}>
             Add Expense
           </Button>
@@ -181,8 +221,8 @@ function ExpensesPage() {
             <TextField
               select
               label="Year"
-              value={branchId}
-              onChange={(event) => setBranchId(event.target.value === "" ? "" : Number(event.target.value))}
+              // value={branchId}
+              // onChange={(event) => setBranchId(event.target.value === "" ? "" : Number(event.target.value))}
               size="small"
               sx={{ width: { xs: "100%", sm: 180 }, minWidth: 0 }}>
               <MenuItem value="2026">2026</MenuItem>
@@ -191,6 +231,48 @@ function ExpensesPage() {
 
         </Paper>
       )}
+
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Add expense record</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: "grid", gap: 2, mt: 0.5 }}>
+            <TextField
+              label="Amount"
+              // type="number"
+              value={paymentAmount}
+              onChange={(event) => {
+                const nextValue = event.target.value;
+                if (nextValue === "" || Number(nextValue) >= 0) {
+                  setPaymentAmount(nextValue);
+                }
+              }}
+              fullWidth
+              slotProps={{ htmlInput: {inputMode: "numeric", min: 0, step: "1", pattern: "[0-9]+" } }} />
+            <Box sx={{ display: "flex", justifyContent: "flex-start" }}>
+              <TextField
+                label="Payment date"
+                type="date"
+                value={paymentDate}
+                onChange={(event) => setPaymentDate(event.target.value)}
+                slotProps={{ inputLabel: { shrink: true } }}
+                sx={{ width: { xs: "100%", sm: 220 } }} />
+            </Box>
+            <Box> 
+              <TextField
+                label="Description"
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+                fullWidth />
+            </Box>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={() => void saveRecord()} disabled={saving}>
+            {saving ? "Saving..." : "Save"}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <TableContainer component={Paper} sx={{ width: "100%", overflowX: "auto", borderRadius: 2 }}>
         <Table sx={{ minWidth: { xs: 320, sm: 680 } }} aria-label="Payment History">
@@ -215,6 +297,7 @@ function ExpensesPage() {
           <TableBody>
             {sortedData.map((ph) => (
               <TableRow key={ph.expenseId} hover>
+                <TableCell sx={{ fontWeight: 600, py: { xs: 1, sm: 1.25 } }}>{ph.description}</TableCell>
                 <TableCell sx={{ fontWeight: 600, py: { xs: 1, sm: 1.25 } }}>{ph.amount}</TableCell>
                 <TableCell sx={{ py: { xs: 1, sm: 1.25 } }}>{String(new Date(ph.paymentDate).toLocaleDateString())}</TableCell>
                 <TableCell align="right" sx={{ whiteSpace: "nowrap", py: { xs: 1, sm: 1.25 } }}>
