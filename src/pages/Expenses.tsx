@@ -1,25 +1,11 @@
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import Alert from "@mui/material/Alert";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import MenuItem from "@mui/material/MenuItem";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import TableSortLabel from "@mui/material/TableSortLabel";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
+import{ Alert, Box, Button, MenuItem, Paper, Table, TableBody, TableCell, TableContainer,
+  TableRow, TableHead, TableSortLabel, TextField, Typography, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import type { Expenses } from "../types/Expenses";
+import type { Branch } from "../types/Branch";
 
 type SortField = "description" | "amount" | "paymentDate";
 type SortDirection = "asc" | "desc";
@@ -32,16 +18,19 @@ const sortableColumns: Array<{ field: SortField; label: string }> = [
 
 function ExpensesPage() {
   const [expenses, setExpenses] = useState<Expenses[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState<number | null>(null);
-  const [search, setSearch] = useState("");
+  //const [search, setSearch] = useState("");
   const [gender, setGender] = useState("");
+  const [branchId, setBranchId] = useState<number | "0">("0");
   const [sortField, setSortField] = useState<SortField>("paymentDate");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const [paymentAmount, setPaymentAmount] = useState("");
   const [paymentDate, setPaymentDate] = useState(new Date().toISOString().slice(0, 10));
   const [description, setDescription] = useState("");
+  
   const [dialogOpen, setDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -57,7 +46,17 @@ function ExpensesPage() {
     }
   }
 
+  async function loadBranches() {
+    try {
+      const response = await api.get<Branch[]>("/Branch");
+      setBranches(response.data);
+    } catch {
+      setError("Could not load branches. Please try again.");
+    }
+  }
+
   useEffect(() => {
+    loadBranches();
     loadExpenses();
   }, []);
 
@@ -120,7 +119,8 @@ function ExpensesPage() {
       await api.post("Expense", {
         Amount: amountValue,
         PaymentDate:paymentDate,
-        Description:description
+        Description:description,
+        BranchId:branchId
       });
       setDialogOpen(false);
       loadExpenses();
@@ -227,8 +227,21 @@ function ExpensesPage() {
               sx={{ width: { xs: "100%", sm: 180 }, minWidth: 0 }}>
               <MenuItem value="2026">2026</MenuItem>
             </TextField>
+            <TextField
+              select
+              label="Branch"
+              value={branchId}
+              onChange={(event) => setBranchId(Number(event.target.value))}
+              size="small"
+              sx={{ width: { xs: "100%", sm: 180 }, minWidth: 0 }}>
+              <MenuItem value="0">--Select--</MenuItem>
+              {branches.map((branch) => (
+                <MenuItem key={branch.id} value={branch.id}>
+                  {branch.friendlyName}
+                </MenuItem>
+              ))}
+            </TextField>
           </Box>
-
         </Paper>
       )}
 
@@ -246,24 +259,39 @@ function ExpensesPage() {
                   setPaymentAmount(nextValue);
                 }
               }}
-              fullWidth
+              fullWidth required
               slotProps={{ htmlInput: {inputMode: "numeric", min: 0, step: "1", pattern: "[0-9]+" } }} />
-            <Box sx={{ display: "flex", justifyContent: "flex-start" }}>
+              
               <TextField
                 label="Payment date"
-                type="date"
+                type="date" required
                 value={paymentDate}
                 onChange={(event) => setPaymentDate(event.target.value)}
                 slotProps={{ inputLabel: { shrink: true } }}
                 sx={{ width: { xs: "100%", sm: 220 } }} />
-            </Box>
-            <Box> 
+              <TextField
+                  select label="Branch"
+                  value={Number(branchId) | 1}
+                  onChange={(event) => setBranchId(Number(event.target.value))}
+                  // disabled={branchesLoading}
+                  // helperText={branchesLoading ? "Loading branches..." : undefined}
+                  >
+                  {branches.length === 0 && //!branchesLoading && 
+                  (
+                    <MenuItem value="" disabled>No branches available</MenuItem>
+                  )}
+                  {branches.map((branch) => (
+                    <MenuItem key={branch.id} value={branch.id}>
+                      {branch.friendlyName}
+                    </MenuItem>
+                  ))}
+              </TextField>
               <TextField
                 label="Description"
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
-                fullWidth />
-            </Box>
+                fullWidth required />
+            
           </Box>
         </DialogContent>
         <DialogActions>
@@ -274,6 +302,9 @@ function ExpensesPage() {
         </DialogActions>
       </Dialog>
 
+    {loading ? (
+      <CircularProgress aria-label="Loading patients" />
+    ):(
       <TableContainer component={Paper} sx={{ width: "100%", overflowX: "auto", borderRadius: 2 }}>
         <Table sx={{ minWidth: { xs: 320, sm: 680 } }} aria-label="Payment History">
           <TableHead>
@@ -322,6 +353,7 @@ function ExpensesPage() {
           </TableBody>
         </Table>
       </TableContainer>
+    )}
     </Box>
   );
 }
