@@ -1,5 +1,5 @@
 import{ AccessTimeRounded, CalendarMonthRounded, FavoriteRounded } from "@mui/icons-material";
-import{ Box, Grid, Paper, Typography }from "@mui/material";
+import{ Alert, Box, Grid, Paper, Typography }from "@mui/material";
 import { motion } from "framer-motion";
 import api from "../services/api";
 import { useEffect, useState } from "react";
@@ -23,28 +23,16 @@ const pulseCards = [
 export default function DashboardPage() {
   const [todaysInquiry, setTodaysInquiry] = useState<TodaysInquiry[]>([]);
   const [error, setError] = useState("");
-  const stats = [
-  {
-    title: "Patients",
-    value: 180
-  },
-  {
-    title: "Appointments",
-    value: 54
-  },
-  {
-    title: "Active Therapies",
-    value: 28
-  },
-  {
-    title: "Revenue",
-    value: "$8,400"
-  }
-  ];  
+
+  const stats = todaysInquiry.map((inquiry) => ({
+    title: "Today's inquiry " + inquiry.branchName,
+    value: inquiry.inquiryCount
+  }));
+
   async function loadTodaysInquiry() {
     try {
       const response = await api.get<TodaysInquiry[]>("Inquiry/GetTodaysInquiry");
-      console.log(response);
+      setTodaysInquiry(response.data ?? []);
     } catch {
       setError("Could not load branches. Please try again.");
     }
@@ -56,6 +44,7 @@ export default function DashboardPage() {
 
   return (
     <Box>
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
       <Grid container spacing={{ xs: 2, sm: 3 }}>
         {stats.map((item) => (
           <Grid size={{ xs: 12, sm: 6, md: 3 }} key={item.title}>
@@ -70,7 +59,7 @@ export default function DashboardPage() {
                   color: "#fff"
                 }}
               >
-                <Typography>{item.title}</Typography>
+                <Typography variant="h6">{item.title}</Typography>
                 <Typography variant="h4">{item.value}</Typography>
               </Paper>
             </motion.div>
