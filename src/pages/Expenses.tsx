@@ -25,6 +25,7 @@ function ExpensesPage() {
   //const [search, setSearch] = useState("");
   const [gender, setGender] = useState("");
   const [branchId, setBranchId] = useState<number | "0">("0");
+  const [branchId_add, setBranchId_add] = useState<number | "">("");
   const [sortField, setSortField] = useState<SortField>("paymentDate");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const [paymentAmount, setPaymentAmount] = useState("");
@@ -91,6 +92,7 @@ function ExpensesPage() {
     setPaymentAmount("");
     setPaymentDate(new Date().toISOString().slice(0, 10));
     setDescription("");
+    setBranchId_add(branches[0]?.id ?? "");
     setDialogOpen(true);
   }
 
@@ -120,7 +122,7 @@ function ExpensesPage() {
         Amount: amountValue,
         PaymentDate:paymentDate,
         Description:description,
-        BranchId:branchId
+        BranchId: branchId_add
       });
       setDialogOpen(false);
       loadExpenses();
@@ -271,8 +273,8 @@ function ExpensesPage() {
                 sx={{ width: { xs: "100%", sm: 220 } }} />
               <TextField
                   select label="Branch"
-                  value={Number(branchId) | 1}
-                  onChange={(event) => setBranchId(Number(event.target.value))}
+                  value={branchId_add}
+                  onChange={(event) => setBranchId_add(Number(event.target.value))}
                   // disabled={branchesLoading}
                   // helperText={branchesLoading ? "Loading branches..." : undefined}
                   >
