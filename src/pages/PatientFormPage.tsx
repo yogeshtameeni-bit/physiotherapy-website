@@ -29,7 +29,8 @@ const emptyPatient: PatientFormData = {
   diagnosis: "",
   treatmentPlan: "",
   branchName: "",
-  isInquiryConvertedToPatient:true
+  isInquiryConvertedToPatient:true,
+  createdDate: new Date()
 };
 
 export default function PatientFormPage() {
@@ -79,8 +80,8 @@ export default function PatientFormPage() {
           diagnosis: patient.diagnosis,
           treatmentPlan: patient.treatmentPlan,
           branchName: patient.branchName,
-          isInquiryConvertedToPatient: patient.isInquiryConvertedToPatient
-          // ,modifiedDate: patient.modifiedDate
+          isInquiryConvertedToPatient: patient.isInquiryConvertedToPatient,
+          createdDate: patient.createdDate
         });
       } catch {
         setError("Could not load the patient. Please try again.");

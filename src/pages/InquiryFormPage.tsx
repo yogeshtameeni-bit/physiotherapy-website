@@ -31,7 +31,8 @@ const emptyInquiry: InquiryFormData = {
   diagnosis: "",
   isInquiryConvertedToPatient: false,
   treatmentPlan: "",
-  branchName: ""
+  branchName: "",
+  createdDate: new Date()
 };
 
 export default function InquiryFormPage() {
@@ -81,7 +82,8 @@ export default function InquiryFormPage() {
           diagnosis: patient.diagnosis,
           isInquiryConvertedToPatient: Boolean((patient as Patient & { isInquiryConvertedToPatient?: boolean }).isInquiryConvertedToPatient),
           treatmentPlan: patient.treatmentPlan,
-          branchName: patient.branchName
+          branchName: patient.branchName,
+          createdDate:patient.createdDate
         });
       } catch {
         setError("Could not load the inquiry. Please try again.");
