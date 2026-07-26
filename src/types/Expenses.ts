@@ -3,4 +3,5 @@ expenseId:number;
 paymentDate:Date;
 amount:number;
 description:string;
+branchName: string;
 }

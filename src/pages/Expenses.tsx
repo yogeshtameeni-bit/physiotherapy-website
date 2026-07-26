@@ -7,13 +7,14 @@ import api from "../services/api";
 import type { Expenses } from "../types/Expenses";
 import type { Branch } from "../types/Branch";
 
-type SortField = "description" | "amount" | "paymentDate";
+type SortField = "description" | "amount" | "paymentDate" | "branchName";
 type SortDirection = "asc" | "desc";
 
 const sortableColumns: Array<{ field: SortField; label: string }> = [
   { field: "description", label: "Description" },
   { field: "amount", label: "Amount" },
-  { field: "paymentDate", label: "Payment Date" }
+  { field: "paymentDate", label: "Payment Date" },
+  { field: "branchName", label: "Branch" }
 ];
 
 function ExpensesPage() {
@@ -192,7 +193,8 @@ function ExpensesPage() {
               display: "grid",
               gridTemplateColumns: {
                 xs: "1fr",
-                sm: "minmax(220px, 2fr) 120px 180px auto"
+                sm: "repeat(2, minmax(0, 1fr))",
+                md: "repeat(3, minmax(0, 1fr))"
               },
               gap: 1.5,
               alignItems: "center",
@@ -204,7 +206,7 @@ function ExpensesPage() {
               label="Month"
               value={gender}
               onChange={(event) => setGender(event.target.value)}
-              sx={{ width: { xs: "100%", sm: 120 }, minWidth: 0 }}
+              fullWidth
               size="small">
               <MenuItem value="0">All</MenuItem>
               <MenuItem value="1">January</MenuItem>
@@ -226,7 +228,7 @@ function ExpensesPage() {
               // value={branchId}
               // onChange={(event) => setBranchId(event.target.value === "" ? "" : Number(event.target.value))}
               size="small"
-              sx={{ width: { xs: "100%", sm: 180 }, minWidth: 0 }}>
+              fullWidth>
               <MenuItem value="2026">2026</MenuItem>
             </TextField>
             <TextField
@@ -235,7 +237,7 @@ function ExpensesPage() {
               value={branchId}
               onChange={(event) => setBranchId(Number(event.target.value))}
               size="small"
-              sx={{ width: { xs: "100%", sm: 180 }, minWidth: 0 }}>
+              fullWidth>
               <MenuItem value="0">--Select--</MenuItem>
               {branches.map((branch) => (
                 <MenuItem key={branch.id} value={branch.id}>
@@ -333,6 +335,7 @@ function ExpensesPage() {
                 <TableCell sx={{ fontWeight: 600, py: { xs: 1, sm: 1.25 } }}>{ph.description}</TableCell>
                 <TableCell sx={{ fontWeight: 600, py: { xs: 1, sm: 1.25 } }}>{ph.amount}</TableCell>
                 <TableCell sx={{ py: { xs: 1, sm: 1.25 } }}>{String(new Date(ph.paymentDate).toLocaleDateString())}</TableCell>
+                <TableCell sx={{ py: { xs: 1, sm: 1.25 } }}>{ph.branchName}</TableCell>
                 <TableCell align="right" sx={{ whiteSpace: "nowrap", py: { xs: 1, sm: 1.25 } }}>
                   <Button
                     size="small"
