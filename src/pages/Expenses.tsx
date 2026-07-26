@@ -2,7 +2,7 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import{ Alert, Box, Button, MenuItem, Paper, Table, TableBody, TableCell, TableContainer,
   TableRow, TableHead, TableSortLabel, TextField, Typography, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import api from "../services/api";
 import type { Expenses } from "../types/Expenses";
 import type { Branch } from "../types/Branch";
@@ -23,8 +23,8 @@ function ExpensesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState<number | null>(null);
-  //const [search, setSearch] = useState("");
-  const [gender, setGender] = useState("");
+  const [month, setMonth] = useState("0");
+  const [year, setYear] = useState("0");
   const [branchId, setBranchId] = useState<number | "0">("0");
   const [branchId_add, setBranchId_add] = useState<number | "">("");
   const [sortField, setSortField] = useState<SortField>("paymentDate");
@@ -97,7 +97,31 @@ function ExpensesPage() {
     setDialogOpen(true);
   }
 
-  const sortedData = [...expenses].sort((a, b) => {
+  const years = useMemo(() => {
+    const availableYears = new Set(expenses.map((expense) => new Date(expense.paymentDate).getFullYear()));
+    return [...availableYears].filter(Number.isFinite).sort((a, b) => b - a);
+  }, [expenses]);
+
+  useEffect(() => {
+    if (year === "0" && years[0] !== undefined) {
+      setYear(String(years[0]));
+    }
+  }, [year, years]);
+
+  const selectedBranchName = useMemo(
+    () => branchId === "0" ? undefined : branches.find((branch) => branch.id === branchId)?.friendlyName,
+    [branchId, branches]
+  );
+
+  const sortedData = useMemo(() => expenses
+    .filter((expense) => {
+      const expenseDate = new Date(expense.paymentDate);
+
+        return (month === "0" || expenseDate.getMonth() + 1 === Number(month))
+        && (year === "0" || expenseDate.getFullYear() === Number(year))
+        && (branchId === "0" || expense.branchName === selectedBranchName);
+    })
+    .sort((a, b) => {
     const direction = sortDirection === "asc" ? 1 : -1;
 
     if (sortField === "amount") {
@@ -107,7 +131,7 @@ function ExpensesPage() {
     const dateA = new Date(a.paymentDate).getTime();
     const dateB = new Date(b.paymentDate).getTime();
     return (dateA - dateB) * direction;
-  })
+    }), [expenses, month, year, branchId, selectedBranchName, sortDirection, sortField]);
   
   async function saveRecord() {
     const amountValue = Number(paymentAmount);
@@ -204,8 +228,8 @@ function ExpensesPage() {
             <TextField
               select
               label="Month"
-              value={gender}
-              onChange={(event) => setGender(event.target.value)}
+              value={month}
+              onChange={(event) => setMonth(event.target.value)}
               fullWidth
               size="small">
               <MenuItem value="0">All</MenuItem>
@@ -225,11 +249,13 @@ function ExpensesPage() {
             <TextField
               select
               label="Year"
-              // value={branchId}
-              // onChange={(event) => setBranchId(event.target.value === "" ? "" : Number(event.target.value))}
+              value={year}
+              onChange={(event) => setYear(event.target.value)}
               size="small"
               fullWidth>
-              <MenuItem value="2026">2026</MenuItem>
+              {years.map((availableYear) => (
+                <MenuItem key={availableYear} value={String(availableYear)}>{availableYear}</MenuItem>
+              ))}
             </TextField>
             <TextField
               select
@@ -238,7 +264,6 @@ function ExpensesPage() {
               onChange={(event) => setBranchId(Number(event.target.value))}
               size="small"
               fullWidth>
-              <MenuItem value="0">--Select--</MenuItem>
               {branches.map((branch) => (
                 <MenuItem key={branch.id} value={branch.id}>
                   {branch.friendlyName}
@@ -348,10 +373,10 @@ function ExpensesPage() {
               </TableRow>
             ))}
 
-            {expenses.length === 0 && (
+            {sortedData.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6} align="center" sx={{ py: 6, color: "text.secondary" }}>
-                  No records have been added yet.
+                  {expenses.length === 0 ? "No records have been added yet." : "No expenses match the selected filters."}
                 </TableCell>
               </TableRow>
             )}
