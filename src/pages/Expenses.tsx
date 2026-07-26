@@ -108,6 +108,12 @@ function ExpensesPage() {
     }
   }, [year, years]);
 
+    useEffect(() => {
+    if (branchId === "0" && branches[0] !== undefined) {
+      setBranchId(branches[0].id);
+    }
+  }, [branchId, branches]);
+
   const selectedBranchName = useMemo(
     () => branchId === "0" ? undefined : branches.find((branch) => branch.id === branchId)?.friendlyName,
     [branchId, branches]
@@ -132,6 +138,11 @@ function ExpensesPage() {
     const dateB = new Date(b.paymentDate).getTime();
     return (dateA - dateB) * direction;
     }), [expenses, month, year, branchId, selectedBranchName, sortDirection, sortField]);
+
+  const totalExpense = useMemo(
+    () => sortedData.reduce((total, expense) => total + expense.amount, 0),
+    [sortedData]
+  );
   
   async function saveRecord() {
     const amountValue = Number(paymentAmount);
@@ -192,9 +203,32 @@ function ExpensesPage() {
               Expenses
             </Typography>
             {!loading && (
-              <Typography variant="body2" sx={{ opacity: 0.82 }}>
-                Total expense
-              </Typography>
+              <Box
+                key={totalExpense}
+                sx={{
+                  display: "inline-flex",
+                  alignItems: "baseline",
+                  gap: 1,
+                  mt: 0.75,
+                  px: 1.25,
+                  py: 0.6,
+                  borderRadius: 1.5,
+                  bgcolor: "rgba(255, 255, 255, 0.18)",
+                  border: "1px solid rgba(255, 255, 255, 0.36)",
+                  animation: "totalExpensePulse 700ms ease-out",
+                  "@keyframes totalExpensePulse": {
+                    "0%": { transform: "scale(1)", bgcolor: "rgba(255, 255, 255, 0.18)" },
+                    "45%": { transform: "scale(1.06)", bgcolor: "rgba(255, 255, 255, 0.42)" },
+                    "100%": { transform: "scale(1)", bgcolor: "rgba(255, 255, 255, 0.18)" }
+                  }
+                }}>
+                <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: 0.4, textTransform: "uppercase" }}>
+                  Total expense
+                </Typography>
+                <Typography variant="h6" component="output" sx={{ fontWeight: 800, lineHeight: 1.1 }}>
+                  {totalExpense.toLocaleString("en-IN", { minimumFractionDigits: 0, maximumFractionDigits: 0, style: "currency", currency: "INR" })}
+                </Typography>
+              </Box>
             )}
           </Box>
           <Button
