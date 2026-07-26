@@ -1,8 +1,9 @@
 import{ AccessTimeRounded, CalendarMonthRounded, FavoriteRounded } from "@mui/icons-material";
-import{ Alert, Box, Grid, Paper, Typography }from "@mui/material";
+import{ Alert, Box, Button, Grid, Paper, Typography }from "@mui/material";
 import { motion } from "framer-motion";
 import api from "../services/api";
 import { useEffect, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import type { TodaysInquiry } from "../types/TodaysInquiry";
 
 
@@ -26,7 +27,8 @@ export default function DashboardPage() {
 
   const stats = todaysInquiry.map((inquiry) => ({
     title: "Today's inquiry " + inquiry.branchName,
-    value: inquiry.inquiryCount
+    value: inquiry.inquiryCount,
+    branchId: inquiry.branchId
   }));
 
   async function loadTodaysInquiry() {
@@ -60,7 +62,23 @@ export default function DashboardPage() {
                 }}
               >
                 <Typography variant="h6">{item.title}</Typography>
-                <Typography variant="h4">{item.value}</Typography>
+                <Button
+                  component={RouterLink}
+                  to={`/inquiries?branchId=${item.branchId}`}
+                  aria-label={`View ${item.value} inquiries for ${item.title}`}
+                  sx={{
+                    p: 0,
+                    minWidth: 0,
+                    color: "inherit",
+                    fontSize: "2.125rem",
+                    fontWeight: 700,
+                    lineHeight: 1.235,
+                    textDecoration: "underline",
+                    textUnderlineOffset: 4,
+                    "&:hover": { bgcolor: "transparent", opacity: 0.8 }
+                  }}>
+                  {item.value}
+                </Button>
               </Paper>
             </motion.div>
           </Grid>

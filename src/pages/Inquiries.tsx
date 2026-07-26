@@ -18,18 +18,19 @@ import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import type { Theme } from "@mui/material/styles";
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../services/api";
 import type { Branch } from "../types/Branch";
 import type { Patient } from "../types/Patient";
 
-type SortField = "fullName" | "gender" | "age" | "phone" | "branchName";
+type SortField = "fullName" | "gender" | "age" | "phone" | "branchName" | "createdDate";
 type SortDirection = "asc" | "desc";
 
 const sortableColumns: Array<{ field: SortField; label: string }> = [
   { field: "fullName", label: "Name" },
   { field: "branchName", label: "Branch" },
   { field: "phone", label: "Phone" },
+  { field: "createdDate", label: "Inquiry Date" },
   { field: "gender", label: "Gender" },
   { field: "age", label: "Age" }
 ];
@@ -42,9 +43,14 @@ function InquiriesPage() {
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [gender, setGender] = useState("");
-  const [branchId, setBranchId] = useState<number | "">("");
-  const [sortField, setSortField] = useState<SortField>("fullName");
-  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  const [searchParams] = useSearchParams();
+  const requestedBranchId = Number(searchParams.get("branchId"));
+  const hasRequestedBranch = Number.isInteger(requestedBranchId) && requestedBranchId > 0;
+  const [branchId, setBranchId] = useState<number | "">(() => {
+    return hasRequestedBranch ? requestedBranchId : "";
+  });
+  const [sortField, setSortField] = useState<SortField>(() => hasRequestedBranch ? "createdDate" : "fullName");
+  const [sortDirection, setSortDirection] = useState<SortDirection>(() => hasRequestedBranch ? "desc" : "asc");
   const navigate = useNavigate();
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
 
@@ -279,9 +285,30 @@ function InquiriesPage() {
                     {patient.branchName || "No branch"} | {patient.phone}
                   </Typography>
                 </Box>
-                <Typography variant="body2" color="text.secondary">
-                  {patient.gender || "Unknown"}
-                </Typography>
+                <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 0.75 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    {patient.gender || "Unknown"}
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 0.75,
+                      px: 1,
+                      py: 0.5,
+                      borderRadius: 1.25,
+                      bgcolor: "rgba(14, 116, 144, 0.1)",
+                      border: "1px solid rgba(14, 116, 144, 0.35)",
+                      color: "primary.dark"
+                    }}>
+                    <Typography variant="caption" sx={{ fontWeight: 800, textTransform: "uppercase", letterSpacing: 0.35 }}>
+                      Inquiry date
+                    </Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 800 }}>
+                      {String(new Date(patient.createdDate).toLocaleDateString())}
+                    </Typography>
+                  </Box>
+                </Box>
               </Box>
               <Divider sx={{ my: 1.5 }} />
               <Box sx={{ mb: 2, display: "grid", gap: 0.75 }}>
@@ -353,6 +380,7 @@ function InquiriesPage() {
                   <TableCell sx={{ fontWeight: 600 }}>{patient.fullName}</TableCell>
                   <TableCell>{patient.branchName || "-"}</TableCell>
                   <TableCell>{patient.phone}</TableCell>
+                  <TableCell>{String(new Date(patient.createdDate).toLocaleDateString())}</TableCell>
                   <TableCell>{patient.gender || "-"}</TableCell>
                   <TableCell>{patient.age}</TableCell>
                   <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>

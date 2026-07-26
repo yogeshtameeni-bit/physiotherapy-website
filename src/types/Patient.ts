@@ -20,4 +20,5 @@ export interface Patient {
   isInquiryConvertedToPatient: boolean;
   treatmentPlan:string;
   branchName: string;
+  createdDate:Date;
 }
