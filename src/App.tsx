@@ -12,12 +12,13 @@ const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
 
 function App() {
   return (
-    // <BrowserRouter basename={basename}>
+     <BrowserRouter basename={basename}>
       <Routes>
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<DashboardPage />} />
-          
+        <Route element={<MainLayout />}>
+          {/* <Route index element={<Navigate to="dashboard" replace />} /> */}
+          <Route path="/" element={<DashboardPage />}>
+          </Route>
+          <Route path="/dashboard" element={<Navigate to="/" replace />} />
           <Route path="inquiries" element={<InquiriesPage />} />
           <Route path="inquiries/add" element={<InquiryFormPage />} />
           <Route path="inquiries/:id/edit" element={<InquiryFormPage />} />
