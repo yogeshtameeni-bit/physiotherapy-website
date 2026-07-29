@@ -8,11 +8,11 @@ import InquiryFormPage from "./pages/InquiryFormPage";
 import ExpensesPage from "./pages/Expenses";
 import MainLayout from "./layouts/mainLayout";
 
-const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
+//const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
 
 function App() {
   return (
-     <BrowserRouter basename={basename}>
+     <BrowserRouter>
       <Routes>
         <Route element={<MainLayout />}>
           {/* <Route index element={<Navigate to="dashboard" replace />} /> */}
