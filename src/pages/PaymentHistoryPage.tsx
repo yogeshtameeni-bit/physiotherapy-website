@@ -34,7 +34,7 @@ const sortableColumns: Array<{ field: SortField; label: string }> = [
 
 type Treatment_SortField = "sitting_Date" | "remarks";
 const Treatment_sortableColumns: Array<{ field: Treatment_SortField; label: string }> = [
-  { field: "sitting_Date", label: "Sitting Date" },
+  { field: "sitting_Date", label: "Date" },
   { field: "remarks", label: "Remarks" }
 ];
 
@@ -480,7 +480,9 @@ function PaymentHistoryPage() {
         <Table sx={{ minWidth: { xs: 320, sm: 680 } }} aria-label="Sittings History">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 700, py: { xs: 1.25, sm: 1.5 }, width: 76 }}>Sr. No.</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 700, py: { xs: 1.25, sm: 1.5 }, width: 76 }}>
+                Sr.No.
+              </TableCell>
               {Treatment_sortableColumns.map((column) => (
                 <TableCell
                   key={column.field}
@@ -500,8 +502,27 @@ function PaymentHistoryPage() {
           <TableBody>
             {sortedSittingHistory.map((ph, index) => (
               <TableRow key={ph.treatment_sittings_Id} hover>
-                <TableCell sx={{ py: { xs: 1, sm: 1.25 } }}>
-                  {sortedSittingHistory.length - index}
+                <TableCell align="center" sx={{ py: { xs: 1, sm: 1.25 } }}>
+                  <Box
+                    component="span"
+                    aria-label={`Sitting number ${sortedSittingHistory.length - index}`}
+                    sx={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      minWidth: 32,
+                      height: 32,
+                      px: 0.75,
+                      borderRadius: "50%",
+                      bgcolor: "primary.main",
+                      color: "primary.contrastText",
+                      fontSize: "0.8125rem",
+                      fontWeight: 800,
+                      fontVariantNumeric: "tabular-nums",
+                      boxShadow: (theme) => `0 3px 8px ${theme.palette.primary.main}38`,
+                    }}>
+                    {sortedSittingHistory.length - index}
+                  </Box>
                 </TableCell>
                 <TableCell sx={{ py: { xs: 1, sm: 1.25 } }}>{String(new Date(ph.sitting_Date).toLocaleDateString())}</TableCell>
                 <TableCell sx={{ py: { xs: 1, sm: 1.25 } }}>{ph.remarks || "-"}</TableCell>
