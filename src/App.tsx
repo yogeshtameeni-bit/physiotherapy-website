@@ -29,8 +29,9 @@ function App() {
           <Route path="payment-history" element={<PaymentHistoryPage />} />
           <Route path="payment-history/:id" element={<PaymentHistoryPage />} />
           <Route path="expenses" element={<ExpensesPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        
       </Routes>
     //</BrowserRouter>
   );
