@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 import DashboardPage from "./pages/DashboardPage";
 import PatientsPage from "./pages/PatientsPage";
 import PatientFormPage from "./pages/PatientFormPage";
@@ -8,17 +8,13 @@ import InquiryFormPage from "./pages/InquiryFormPage";
 import ExpensesPage from "./pages/Expenses";
 import MainLayout from "./layouts/mainLayout";
 
-//const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
-
 function App() {
   return (
-     <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route element={<MainLayout />}>
-          {/* <Route index element={<Navigate to="dashboard" replace />} /> */}
-          <Route path="/" element={<DashboardPage />}>
-          </Route>
-          <Route path="/dashboard" element={<Navigate to="/" replace />} />
+          <Route index element={<DashboardPage />} />
+          <Route path="dashboard" element={<DashboardPage />} />
           <Route path="inquiries" element={<InquiriesPage />} />
           <Route path="inquiries/add" element={<InquiryFormPage />} />
           <Route path="inquiries/:id/edit" element={<InquiryFormPage />} />
@@ -29,12 +25,10 @@ function App() {
           <Route path="payment-history" element={<PaymentHistoryPage />} />
           <Route path="payment-history/:id" element={<PaymentHistoryPage />} />
           <Route path="expenses" element={<ExpensesPage />} />
-          <Route path="*" element={<Navigate to="/dashboard" />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
-        
       </Routes>
-    //</BrowserRouter>
+    </HashRouter>
   );
 }
 
