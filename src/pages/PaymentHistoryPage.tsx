@@ -480,6 +480,7 @@ function PaymentHistoryPage() {
         <Table sx={{ minWidth: { xs: 320, sm: 680 } }} aria-label="Sittings History">
           <TableHead>
             <TableRow>
+              <TableCell sx={{ fontWeight: 700, py: { xs: 1.25, sm: 1.5 }, width: 76 }}>Sr. No.</TableCell>
               {Treatment_sortableColumns.map((column) => (
                 <TableCell
                   key={column.field}
@@ -497,8 +498,11 @@ function PaymentHistoryPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortedSittingHistory.map((ph) => (
+            {sortedSittingHistory.map((ph, index) => (
               <TableRow key={ph.treatment_sittings_Id} hover>
+                <TableCell sx={{ py: { xs: 1, sm: 1.25 } }}>
+                  {sortedSittingHistory.length - index}
+                </TableCell>
                 <TableCell sx={{ py: { xs: 1, sm: 1.25 } }}>{String(new Date(ph.sitting_Date).toLocaleDateString())}</TableCell>
                 <TableCell sx={{ py: { xs: 1, sm: 1.25 } }}>{ph.remarks || "-"}</TableCell>
                 <TableCell align="right" sx={{ whiteSpace: "nowrap", py: { xs: 1, sm: 1.25 } }}>
@@ -515,7 +519,7 @@ function PaymentHistoryPage() {
 
             {sittingHistory.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} align="center" sx={{ py: 6, color: "text.secondary" }}>
+                <TableCell colSpan={4} align="center" sx={{ py: 6, color: "text.secondary" }}>
                   No records have been added yet.
                 </TableCell>
               </TableRow>
