@@ -12,7 +12,7 @@ const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
 
 function App() {
   return (
-    <BrowserRouter basename={basename}>
+    // <BrowserRouter basename={basename}>
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Navigate to="dashboard" replace />} />
@@ -31,7 +31,7 @@ function App() {
         </Route>
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
-    </BrowserRouter>
+    //</BrowserRouter>
   );
 }
 
