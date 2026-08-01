@@ -6,6 +6,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Divider from "@mui/material/Divider";
+import CircularProgress from "@mui/material/CircularProgress";
 import MenuItem from "@mui/material/MenuItem";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -43,7 +44,7 @@ function PaymentHistoryPage() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [paymentHistory, setPaymentHistory] = useState<PaymentHistory[]>([]);
   const [sittingHistory, setSittingHistory] = useState<Treatment_Sittings[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingPatients, setLoadingPatients] = useState(true);
   const [error, setError] = useState("");
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [sortField, setSortField] = useState<SortField>("paymentDate");
@@ -63,7 +64,7 @@ function PaymentHistoryPage() {
   const [savingSitting, setSavingSitting] = useState(false);
 
   async function loadPatients() {
-    setLoading(true);
+    setLoadingPatients(true);
     setError("");
     try {
       const response = await api.get<Patient[]>("/Patients");
@@ -73,7 +74,7 @@ function PaymentHistoryPage() {
       console.error("Error loading patients", err);
       setError("Could not load patients");
     } finally {
-      setLoading(false);
+      setLoadingPatients(false);
     }
   }
 
@@ -118,14 +119,12 @@ function PaymentHistoryPage() {
   }
 
   async function loadPaymentHistory(patientIdArg?: number) {
-    setLoading(true);
     setError("");
 
     const patientId = patientIdArg ?? (id ? Number(id) : selectedPatient?.id);
     if (!patientId) {
       setPaymentHistory([]);
       setSittingHistory([]);
-      setLoading(false);
       return;
     }
 
@@ -136,7 +135,6 @@ function PaymentHistoryPage() {
       console.error("Error fetching payment history:", loadError);
       setError("Could not load payment history. Please try again.");
     } finally {
-      setLoading(false);
     }
 
     await loadSittingsHistory(patientId);
@@ -150,7 +148,6 @@ function PaymentHistoryPage() {
       console.error("Error fetching sitting history:", loadError);
       setError("Could not load sitting history. Please try again.");
     } finally {
-      setLoading(false);
     }
   }
 
@@ -291,6 +288,8 @@ function PaymentHistoryPage() {
     return (dateA - dateB) * direction;
   });
 
+  const isLoading = loadingPatients; //|| loadingPaymentHistory || loadingSittingsHistory;
+
   return (
     <Box>
       <Paper
@@ -306,13 +305,18 @@ function PaymentHistoryPage() {
         </Typography>
       </Paper>
 
+      {isLoading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", py: 3 }}>
+          <CircularProgress aria-label="Loading payment history" />
+        </Box>
+      ) : (
       <Paper sx={{ p: { xs: 2, sm: 2.5 }, mb: 2.5, maxWidth: 760, borderRadius: 2 }}>
         <Box sx={{ display: "flex", gap: 1.25, alignItems: "center", flexWrap: "wrap" }}>
           <Autocomplete
             sx={{ flex: 1, minWidth: 280 }}
             options={patients}
             getOptionLabel={(option) => `${option.fullName} (${option.phone}) - ${option.branchName}`}
-            loading={loading}
+            loading={isLoading}
             value={selectedPatient}
             onChange={(_event, newValue) => {
               setSelectedPatient(newValue);
@@ -346,7 +350,7 @@ function PaymentHistoryPage() {
             {savingSitting ? "Saving..." : "Add Sitting"}
           </Button>
         </Box>
-      </Paper>
+      </Paper>)}
 
       <Dialog open={paymentDialogOpen} onClose={() => setPaymentDialogOpen(false)} maxWidth="xs" fullWidth>
         <DialogTitle>Add payment record</DialogTitle>
