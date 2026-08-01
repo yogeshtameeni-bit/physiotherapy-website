@@ -32,7 +32,8 @@ const emptyInquiry: InquiryFormData = {
   isInquiryConvertedToPatient: false,
   treatmentPlan: "",
   branchName: "",
-  createdDate: new Date()
+  createdDate: new Date(),
+  lastVisitedDate: new Date()
 };
 
 export default function InquiryFormPage() {
@@ -83,7 +84,8 @@ export default function InquiryFormPage() {
           isInquiryConvertedToPatient: Boolean((patient as Patient & { isInquiryConvertedToPatient?: boolean }).isInquiryConvertedToPatient),
           treatmentPlan: patient.treatmentPlan,
           branchName: patient.branchName,
-          createdDate:patient.createdDate
+          createdDate:patient.createdDate,
+          lastVisitedDate: patient.lastVisitedDate
         });
       } catch {
         setError("Could not load the inquiry. Please try again.");
