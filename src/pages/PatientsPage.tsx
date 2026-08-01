@@ -25,13 +25,14 @@ import api from "../services/api";
 import type { Branch } from "../types/Branch";
 import type { Patient } from "../types/Patient";
 
-type SortField = "fullName" | "gender" | "age" | "phone" | "branchName";
+type SortField = "fullName" | "gender" | "lastVisitedDate" | "phone" | "age"| "branchName";
 type SortDirection = "asc" | "desc";
 
 const sortableColumns: Array<{ field: SortField; label: string }> = [
   { field: "fullName", label: "Name" },
   { field: "branchName", label: "Branch" },
   { field: "phone", label: "Phone" },
+  { field: "lastVisitedDate", label: "Last Visited" },
   { field: "gender", label: "Gender" },
   { field: "age", label: "Age" }
 ];
@@ -45,8 +46,8 @@ function PatientsPage() {
   const [search, setSearch] = useState("");
   const [gender, setGender] = useState("");
   const [branchId, setBranchId] = useState<number | "">("");
-  const [sortField, setSortField] = useState<SortField>("fullName");
-  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  const [sortField, setSortField] = useState<SortField>("lastVisitedDate");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const navigate = useNavigate();
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
 
@@ -275,7 +276,7 @@ function PatientsPage() {
                       fontSize: "1.05rem",
                       overflowWrap: "anywhere"
                     }}>
-                    {patient.fullName}
+                    {patient.fullName} - {patient.lastVisitedDate ? new Date(patient.lastVisitedDate).toLocaleDateString() : "Never visited"}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     {patient.branchName || "No branch"} | {patient.phone}
@@ -366,6 +367,7 @@ function PatientsPage() {
                   <TableCell sx={{ fontWeight: 600 }}>{patient.fullName}</TableCell>
                   <TableCell>{patient.branchName || "-"}</TableCell>
                   <TableCell>{patient.phone}</TableCell>
+                  <TableCell>{patient.lastVisitedDate ? new Date(patient.lastVisitedDate).toLocaleDateString() : "-"}</TableCell>
                   <TableCell>{patient.gender || "-"}</TableCell>
                   <TableCell>{patient.age}</TableCell>
                   <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>

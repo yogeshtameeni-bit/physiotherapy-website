@@ -21,4 +21,5 @@ export interface Patient {
   treatmentPlan:string;
   branchName: string;
   createdDate:Date;
+  lastVisitedDate:Date;
 }
