@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { HashRouter, Navigate, Outlet, Route, Routes } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { HashRouter, Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import DashboardPage from "./pages/DashboardPage";
 import PatientsPage from "./pages/PatientsPage";
 import PatientFormPage from "./pages/PatientFormPage";
@@ -10,15 +10,63 @@ import ExpensesPage from "./pages/Expenses";
 import Login from "./pages/Login";
 import MainLayout from "./layouts/mainLayout";
 
+function isTokenExpired(expires?: string | null) {
+  if (!expires) {
+    return true;
+  }
+
+  const expiryTime = new Date(expires).getTime();
+  if (Number.isNaN(expiryTime)) {
+    return true;
+  }
+
+  return Date.now() >= expiryTime;
+}
+
+function clearAuthStorage() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("tokenExpires");
+}
+
 function ProtectedRoute({ isAuthenticated }: { isAuthenticated: boolean }) {
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 }
 
+function AuthWatcher({ onAuthChange }: { onAuthChange: (value: boolean) => void }) {
+  const location = useLocation();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const expires = localStorage.getItem("tokenExpires");
+
+    if (!token || isTokenExpired(expires)) {
+      clearAuthStorage();
+      onAuthChange(false);
+      return;
+    }
+
+    onAuthChange(true);
+  }, [location.pathname, onAuthChange]);
+
+  return null;
+}
+
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => Boolean(localStorage.getItem("token")));
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    const token = localStorage.getItem("token");
+    const expires = localStorage.getItem("tokenExpires");
+
+    if (!token || isTokenExpired(expires)) {
+      clearAuthStorage();
+      return false;
+    }
+
+    return true;
+  });
 
   return (
     <HashRouter>
+      <AuthWatcher onAuthChange={setIsAuthenticated} />
       <Routes>
         <Route
           path="/login"
