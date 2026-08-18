@@ -66,7 +66,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         py: 4
       }}
     >
-      <Container maxWidth="md" sx={{ px: { xs: 2, sm: 4 } }}>
+      <Container maxWidth="sm" sx={{ px: { xs: 2, sm: 3 } }}>
         <Box
           sx={{
             display: 'grid',
@@ -117,67 +117,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 borderRadius: '50%'
               }}
             />
-            <Box sx={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-              <Box
-                component="img"
-                src={LogoImage}
-                alt="Niyat Physiotherapy Logo"
-                sx={{
-                  width: 80,
-                  height: 80,
-                  borderRadius: '50%',
-                  objectFit: 'cover',
-                  border: '3px solid rgba(255, 255, 255, 0.2)'
-                }}
-              />
-              <Typography
-                variant="h5"
-                sx={{
-                  fontWeight: 800,
-                  mb: 1,
-                  fontSize: { xs: '1.2rem', sm: '1.5rem' },
-                  lineHeight: 1.3,
-                  textAlign: 'center'
-                }}>
-                NIYAT PHYSIOTHERAPY & OBESITY CENTER
-              </Typography>
-              {/* <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 800,
-                  mb: 2,
-                  fontSize: { xs: '0.9rem', sm: '1.1rem' },
-                  lineHeight: 1.3,
-                  textAlign: 'center'
-                }}
-              >
-                & OBESITY CENTER
-              </Typography> */}
-              <Typography
-                variant="body1"
-                sx={{
-                  mb: 3,
-                  fontSize: '0.95rem',
-                  opacity: 0.95,
-                  lineHeight: 1.6
-                }}>
-                Welcome back to your daily records management
-              </Typography>
-              <Box
-                sx={{
-                  display: 'flex',
-                  gap: 2,
-                  justifyContent: 'center',
-                  mt: 4
-                }}
-              >
-                {['✓ Secure Access', '✓ Patient Care', '✓ Progress Tracking'].map((item) => (
-                  <Typography key={item} variant="caption" sx={{ fontSize: '0.8rem' }}>
-                    {item}
-                  </Typography>
-                ))}
-              </Box>
-            </Box>
+            
           </Box>
 
           {/* Right Side - Login Form */}
@@ -185,12 +125,51 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             component="form"
             onSubmit={handleSubmit}
             sx={{
-              p: { xs: 3, sm: 4 },
+              p: { xs: 2, sm: 4 },
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center'
             }}
           >
+            {/* Mobile Header - Show logo and branding on mobile */}
+            <Box sx={{ display: { xs: 'flex', sm: 'none' }, flexDirection: 'column', alignItems: 'center', mb: 3, pb: 2, borderBottom: '1px solid #e0e0e0' }}>
+              <Box
+                component="img"
+                src={LogoImage}
+                alt="Niyat Physiotherapy Logo"
+                sx={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                  border: '2px solid #0f766e',
+                  mb: 1.5
+                }}
+              />
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 800,
+                  fontSize: '1rem',
+                  textAlign: 'center',
+                  color: '#0f766e',
+                  mb: 0.5
+                }}
+              >
+                NIYAT PHYSIOTHERAPY
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{
+                  fontWeight: 600,
+                  fontSize: '0.75rem',
+                  textAlign: 'center',
+                  color: '#666'
+                }}
+              >
+                & OBESITY CENTER
+              </Typography>
+            </Box>
             <Box sx={{ mb: 1 }}>
               <Typography
                 variant="h5"
