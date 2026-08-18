@@ -17,6 +17,7 @@ type SidebarProps = {
 };
 
 export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
+  const username = localStorage.getItem('userName') || 'User';
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -43,7 +44,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
               WELCOME
             </Typography>
             <Typography variant="h6" sx={{ lineHeight: 1.1 }}>
-              User
+              {username}
             </Typography>
           </Box>
         </Box>

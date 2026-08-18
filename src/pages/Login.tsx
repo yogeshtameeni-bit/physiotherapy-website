@@ -42,6 +42,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       const { token, expires } = resp.data;
       localStorage.setItem('token', token);
       localStorage.setItem('tokenExpires', expires);
+      localStorage.setItem('userName', userName);
       onLogin?.();
       navigate('/dashboard', { replace: true });
     } catch (err: any) {
