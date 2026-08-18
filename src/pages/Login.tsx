@@ -4,6 +4,7 @@ import {Box, Button, CircularProgress, Container, TextField, Typography, Alert,
   InputAdornment, IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import api from '../services/api';
+import LogoImage from '../assets/images/logo.jpg';
 
 interface LoginProps {
   onLogin?: () => void;
@@ -65,11 +66,12 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         py: 4
       }}
     >
-      <Container maxWidth="sm">
+      <Container maxWidth="md" sx={{ px: { xs: 2, sm: 4 } }}>
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+            gridTemplateColumns: { xs: '1fr', sm: '1.2fr 1fr' },
+
             gap: 0,
             alignItems: 'stretch',
             borderRadius: '16px',
@@ -115,17 +117,42 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 borderRadius: '50%'
               }}
             />
-            <Box sx={{ position: 'relative', zIndex: 1 }}>
+            <Box sx={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+              <Box
+                component="img"
+                src={LogoImage}
+                alt="Niyat Physiotherapy Logo"
+                sx={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                  border: '3px solid rgba(255, 255, 255, 0.2)'
+                }}
+              />
               <Typography
-                variant="h4"
+                variant="h5"
+                sx={{
+                  fontWeight: 800,
+                  mb: 1,
+                  fontSize: { xs: '1.2rem', sm: '1.5rem' },
+                  lineHeight: 1.3,
+                  textAlign: 'center'
+                }}>
+                NIYAT PHYSIOTHERAPY & OBESITY CENTER
+              </Typography>
+              {/* <Typography
+                variant="h6"
                 sx={{
                   fontWeight: 800,
                   mb: 2,
-                  fontSize: '2rem',
-                  lineHeight: 1.2
-                }}>
-              NIYAT PHYSIOTHERAPY AND OBESITY CENTER
-              </Typography>
+                  fontSize: { xs: '0.9rem', sm: '1.1rem' },
+                  lineHeight: 1.3,
+                  textAlign: 'center'
+                }}
+              >
+                & OBESITY CENTER
+              </Typography> */}
               <Typography
                 variant="body1"
                 sx={{
@@ -241,18 +268,20 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 }
               }}
               placeholder="Enter your password"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleClickShowPassword}
-                      edge="end"
-                      disabled={isSubmitting}
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                )
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={handleClickShowPassword}
+                        edge="end"
+                        disabled={isSubmitting}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }
               }}
             />
 
