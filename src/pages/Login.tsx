@@ -81,45 +81,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             background: '#fff'
           }}
         >
-          {/* Left Side - Image/Info */}
-          <Box
-            sx={{
-              background: 'linear-gradient(135deg, #0f766e 0%, #164e63 100%)',
-              display: { xs: 'none', sm: 'flex' },
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              p: 4,
-              color: '#fff',
-              textAlign: 'center',
-              position: 'relative',
-              overflow: 'hidden'
-            }}
-          >
-            <Box
-              sx={{
-                position: 'absolute',
-                top: -50,
-                right: -50,
-                width: 200,
-                height: 200,
-                background: 'rgba(255, 255, 255, 0.1)',
-                borderRadius: '50%'
-              }}
-            />
-            <Box
-              sx={{
-                position: 'absolute',
-                bottom: -30,
-                left: -30,
-                width: 150,
-                height: 150,
-                background: 'rgba(255, 255, 255, 0.1)',
-                borderRadius: '50%'
-              }}
-            />
-            
-          </Box>
+          
 
           {/* Right Side - Login Form */}
           <Box
