@@ -2,8 +2,8 @@ import axios from "axios";
 
 const api = axios.create({
 
-  // baseURL: "http://localhost:5151/api",
-  // baseURL: "http://localhost:8085/api", // IIS
+  //baseURL: "http://localhost:5151/api",
+   //baseURL: "http://localhost:8085/api", // IIS
   baseURL: "https://niyatphysio-api.shop/api",
   headers: {
     "Content-Type": "application/json"
@@ -13,8 +13,12 @@ const api = axios.create({
 // Attach token from localStorage to every request
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
+  const userName = localStorage.getItem('userName');
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
+  }
+  if (token && userName && config.headers) {
+    config.headers.UserName = userName;
   }
   return config;
 }, error => Promise.reject(error));
