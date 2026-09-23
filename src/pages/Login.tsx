@@ -13,6 +13,7 @@ interface LoginProps {
 interface LoginResponse {
   token: string;
   expires: string;
+  role: string;
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
@@ -39,10 +40,11 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         UserName: userName,
         Password: password
       });
-      const { token, expires } = resp.data;
+      const { token, expires, role } = resp.data;
       localStorage.setItem('token', token);
       localStorage.setItem('tokenExpires', expires);
       localStorage.setItem('userName', userName);
+      localStorage.setItem('role', role);
       onLogin?.();
       navigate('/dashboard', { replace: true });
     } catch (err: any) {
