@@ -236,7 +236,7 @@ function InquiriesPage() {
               size="small"
               sx={{ width: { xs: "100%", sm: 180 }, minWidth: 0 }}
             >
-              <MenuItem value="">All branches</MenuItem>
+              {branches.length > 1 && <MenuItem value="">All branches</MenuItem>}
               {branches.map((branch) => (
                 <MenuItem key={branch.id} value={branch.id}>
                   {branch.friendlyName}

@@ -302,7 +302,7 @@ export default function InquiryFormPage() {
             type="button"
             variant="outlined"
             startIcon={<ArrowBackRoundedIcon />}
-            onClick={() => navigate("/patients")}
+            onClick={() => navigate("/inquiries")}
             disabled={saving}
           >
             Back to inquiries
