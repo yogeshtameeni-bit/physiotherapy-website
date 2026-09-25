@@ -4,6 +4,7 @@ import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
 import NoteRoundedIcon from "@mui/icons-material/NoteRounded";
 import ExplicitIcon from '@mui/icons-material/Explicit';
 import CurrencyRupee from '@mui/icons-material/CurrencyRupee';
+import Scale from '@mui/icons-material/Scale';
 
 export type NavigationItem = {
   title: string;
@@ -46,6 +47,12 @@ export const navigationItems: NavigationItem[] = [
     path: "/income",
     icon: CurrencyRupee,
     matchPrefix: true
+  },  
+  {
+    title: "Weight loss program",
+    path: "/weight-loss-program",
+    icon: Scale,
+    matchPrefix: true
   }
 ];
 
@@ -55,5 +62,6 @@ export function getPageTitle(pathname: string) {
   if (pathname.startsWith("/patients")) return "Patients";
   if (pathname.startsWith("/payment-history")) return "Payment history";
   if (pathname.startsWith("/income")) return "Income";
+  if (pathname.startsWith("/weight-loss-program")) return "Weight loss program";
   return "Dashboard";
 }

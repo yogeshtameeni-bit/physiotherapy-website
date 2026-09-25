@@ -8,6 +8,7 @@ import InquiriesPage from "./pages/Inquiries";
 import InquiryFormPage from "./pages/InquiryFormPage";
 import ExpensesPage from "./pages/Expenses";
 import IncomePage from "./pages/Income";
+import WeightLossProgramPage from "./pages/WeightLossProgramPage";
 import Login from "./pages/Login";
 import MainLayout from "./layouts/mainLayout";
 
@@ -91,6 +92,7 @@ function App() {
             <Route path="payment-history/:id" element={<PaymentHistoryPage />} />
             <Route path="expenses" element={<ExpensesPage />} />
             <Route path="income" element={<IncomePage />} />
+            <Route path="weight-loss-program" element={<WeightLossProgramPage />} />
           </Route>
         </Route>
 
