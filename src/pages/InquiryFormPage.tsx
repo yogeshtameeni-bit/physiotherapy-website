@@ -11,7 +11,11 @@ import MenuItem from "@mui/material/MenuItem";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import { useEffect, useRef, useState, type ReactNode, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
 import type { Branch } from "../types/Branch";
@@ -47,7 +51,13 @@ export default function InquiryFormPage() {
   const [branchesLoading, setBranchesLoading] = useState(true);
   const [loading, setLoading] = useState(isEditing);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<ReactNode>("");
+  const [duplicatePhoneAlertOpen, setDuplicatePhoneAlertOpen] = useState(false);
+  const [duplicatePatient, setDuplicatePatient] = useState<{
+    fullName?: string;
+    complain?: string;
+    address?: string;
+  }>({});
 
   useEffect(() => {
     async function loadBranches() {
@@ -118,11 +128,29 @@ export default function InquiryFormPage() {
 
     try {
       try {
-        const existsResp = await api.get<{ exists: boolean; id?: number }>(
+        const existsResp = await api.get<{ exists: boolean;
+          id?: number;
+          fullName?: string;
+          complain?: string;
+          address?: string; }>(
           `/Patients/CheckPatientByPhone?phone=${encodeURIComponent(form.phone)}${isEditing ? `&patientId=${id}` : ""}`
         );
         if (existsResp.data?.id && existsResp.data.id > 0) {
-          setError("This phone number is already used by another patient.");
+          setDuplicatePatient(existsResp.data);
+          setDuplicatePhoneAlertOpen(true);
+          
+          setError(
+            <>
+              <div>This phone number is already used by another patient.</div>
+              <div>Details of the existing patient:</div>
+              <ul style={{ margin: "4px 0 0", paddingLeft: "20px" }}>
+                <li><strong>Name:</strong> {existsResp.data.fullName}</li>
+                <li><strong>Complain:</strong> {existsResp.data.complain}</li>
+                <li><strong>Address:</strong> {existsResp.data.address}</li>
+              </ul>
+            </>
+          );
+
           pageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
           setSaving(false);
           return;
@@ -312,6 +340,34 @@ export default function InquiryFormPage() {
           </Button>
         </Box>
       </Paper>
+
+      <Dialog
+        open={duplicatePhoneAlertOpen}
+        onClose={() => setDuplicatePhoneAlertOpen(false)}
+        aria-labelledby="duplicate-phone-dialog-title"
+        maxWidth="sm"
+        fullWidth>
+        <DialogTitle id="duplicate-phone-dialog-title" sx={{ color: "error.main", fontWeight: 800 }}>
+          Duplicate phone number found. 
+        </DialogTitle>
+        <DialogContent>
+          <Alert severity="error" sx={{ mb: 1.5 }}>
+            Cross verify with your other branches before proceeding.
+          </Alert>
+          <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
+            Existing patient details
+          </Typography>
+          <Typography><strong>Name:</strong> {duplicatePatient.fullName || "—"}</Typography>
+          <Typography><strong>Complain:</strong> {duplicatePatient.complain || "—"}</Typography>
+          <Typography><strong>Address:</strong> {duplicatePatient.address || "—"}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" color="error" onClick={() => setDuplicatePhoneAlertOpen(false)} autoFocus>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
     </Box>
   );
 }
