@@ -8,6 +8,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Typography from "@mui/material/Typography";
 import { useLocation, useNavigate } from "react-router-dom";
 import { navigationItems } from "../navigation";
+import Roles from "../constants/roles";
 
 const drawerWidth = 280;
 
@@ -18,8 +19,13 @@ type SidebarProps = {
 
 export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
   const username = localStorage.getItem('userName') || 'User';
+  const role = localStorage.getItem('role');
   const navigate = useNavigate();
   const location = useLocation();
+  const canViewFinancialMenus = role === Roles.MAIN_ADMIN || role === Roles.SAFAL_ADMIN;
+  const visibleNavigationItems = navigationItems.filter((menu) =>
+    !["/expenses", "/income"].includes(menu.path) || canViewFinancialMenus
+  );
 
   function isActive(path: string, matchPrefix?: boolean) {
     return matchPrefix
@@ -50,7 +56,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
         </Box>
       </Box>
       <List sx={{ p: 0 }}>
-        {navigationItems.map((menu) => {
+        {visibleNavigationItems.map((menu) => {
           const Icon = menu.icon;
           const active = isActive(menu.path, menu.matchPrefix);
 
