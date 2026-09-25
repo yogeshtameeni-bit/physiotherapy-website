@@ -3,6 +3,7 @@ import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
 import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
 import NoteRoundedIcon from "@mui/icons-material/NoteRounded";
 import ExplicitIcon from '@mui/icons-material/Explicit';
+import CurrencyRupee from '@mui/icons-material/CurrencyRupee';
 
 export type NavigationItem = {
   title: string;
@@ -39,6 +40,12 @@ export const navigationItems: NavigationItem[] = [
     path: "/expenses",
     icon: ExplicitIcon,
     matchPrefix: true
+  },  
+  {
+    title: "Income",
+    path: "/income",
+    icon: CurrencyRupee,
+    matchPrefix: true
   }
 ];
 
@@ -47,5 +54,6 @@ export function getPageTitle(pathname: string) {
   if (pathname.includes("/edit")) return "Edit patient";
   if (pathname.startsWith("/patients")) return "Patients";
   if (pathname.startsWith("/payment-history")) return "Payment history";
+  if (pathname.startsWith("/income")) return "Income";
   return "Dashboard";
 }
