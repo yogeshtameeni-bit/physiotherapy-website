@@ -1,9 +1,14 @@
+import { useEffect, useMemo, useState } from "react";
 import AccountBalanceRoundedIcon from "@mui/icons-material/AccountBalanceRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import AssessmentRoundedIcon from "@mui/icons-material/AssessmentRounded";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
-import CurrencyRupeeRoundedIcon from "@mui/icons-material/CurrencyRupeeRounded";
-import { Box, Button, Grid, Paper, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
+import{ Alert, Box, Button, MenuItem, Paper, Table, TableBody, TableCell, TableContainer,
+  TableRow, TableHead, TableSortLabel, TextField, Typography, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle
+} from "@mui/material";
+import type { Branch } from "../types/Branch";
+import type { IncomeReport } from "../types/IncomeReport";
 
 const overviewCards = [
   {
@@ -26,55 +31,183 @@ const overviewCards = [
   }
 ];
 
+type SortField = "amount" | "date" | "branchName";
+type SortDirection = "asc" | "desc";
+
 export default function IncomePage() {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [expenses, setIncomeData] = useState<IncomeReport[]>([]);
+  const [month, setMonth] = useState("0");
+  const [year, setYear] = useState("0");
+  const [branchId, setBranchId] = useState<number | "0">("0");
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+  const [sortField, setSortField] = useState<SortField>("date");
+  
+  
+
+  const selectedBranchName = useMemo(
+    () => branchId === "0" ? undefined : branches.find((branch) => branch.id === branchId)?.friendlyName,
+    [branchId, branches]
+  );
+
+  const sortedData = useMemo(() => expenses
+    .filter((expense) => {
+      const expenseDate = new Date(expense.date);
+
+        return (month === "0" || expenseDate.getMonth() + 1 === Number(month))
+        && (year === "0" || expenseDate.getFullYear() === Number(year))
+        && (branchId === "0" || expense.branchName === selectedBranchName);
+    })
+    .sort((a, b) => {
+    const direction = sortDirection === "asc" ? 1 : -1;
+
+    if (sortField === "amount") {
+      return (a.amount - b.amount) * direction;
+    }
+
+    const dateA = new Date(a.date).getTime();
+    const dateB = new Date(b.date).getTime();
+    return (dateA - dateB) * direction;
+    }), [expenses, month, year, branchId, selectedBranchName, sortDirection, sortField]);
+
+  const totalIncome = useMemo(
+    () => sortedData.reduce((total, expense) => total + expense.amount, 0),
+    [sortedData]
+  );
+
+  const years = useMemo(() => {
+    const availableYears = new Set(expenses.map((expense) => new Date(expense.date).getFullYear()));
+    return [...availableYears].filter(Number.isFinite).sort((a, b) => b - a);
+  }, [expenses]);
+
   return (
     <Box>
       <Paper
-        sx={{
-          position: "relative",
-          overflow: "hidden",
-          p: { xs: 2.5, sm: 4 },
-          mb: 2.5,
-          borderRadius: 2,
-          background: "linear-gradient(145deg, #164e63 0%, #0f766e 58%, #0d9488 100%)",
-          color: "#fff"
-        }}
-      >
+          sx={{
+            p: { xs: 2.25, sm: 3 },
+            mb: 2.5,
+            borderRadius: 2,
+            background: "linear-gradient(145deg, rgba(15,118,110,0.96), rgba(22,78,99,0.9))",
+            color: "#fff"
+          }}>
         <Box
           sx={{
-            position: "absolute",
-            right: { xs: -45, sm: 24 },
-            top: { xs: 18, sm: 28 },
-            width: { xs: 120, sm: 170 },
-            height: { xs: 120, sm: 170 },
-            borderRadius: "50%",
-            border: "1px solid rgba(255,255,255,0.2)",
-            display: "grid",
-            placeItems: "center",
-            color: "rgba(255,255,255,0.7)"
-          }}
-        >
-          <CurrencyRupeeRoundedIcon sx={{ fontSize: { xs: 58, sm: 82 } }} />
-        </Box>
-        <Box sx={{ position: "relative", maxWidth: 620 }}>
-          <Typography variant="overline" sx={{ fontWeight: 800, letterSpacing: 1.2, opacity: 0.78 }}>
-            Financial workspace
-          </Typography>
-          <Typography variant="h4" component="h1" sx={{ mt: 0.5, fontWeight: 800 }}>
-            Income
-          </Typography>
-          <Typography sx={{ mt: 1.25, maxWidth: 540, color: "rgba(255,255,255,0.82)" }}>
-            A clear home for collections, branch performance, and the payments that keep the clinic moving.
-          </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddRoundedIcon />}
-            sx={{ mt: 2.5, bgcolor: "#fff", color: "#0f766e", "&:hover": { bgcolor: "#ecfeff" } }}
-          >
-            Record income
-          </Button>
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            gap: 2,
+            alignItems: "center",
+            justifyContent: "space-between"
+          }}>
+          <Box sx={{ flex: "1 1 auto", minWidth: 0 }}>
+            <Typography
+              variant="h5"
+              component="h1"
+              sx={{
+                fontWeight: 800,
+                textAlign: "left",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap"
+              }}>
+              Income Report 
+            </Typography>
+            {!loading && (
+              <Box
+                key={totalIncome}
+                sx={{
+                  display: "inline-flex",
+                  alignItems: "baseline",
+                  gap: 1,
+                  mt: 0.75,
+                  px: 1.25,
+                  py: 0.6,
+                  borderRadius: 1.5,
+                  bgcolor: "rgba(255, 255, 255, 0.18)",
+                  border: "1px solid rgba(255, 255, 255, 0.36)",
+                  animation: "totalExpensePulse 700ms ease-out",
+                  "@keyframes totalExpensePulse": {
+                    "0%": { transform: "scale(1)", bgcolor: "rgba(255, 255, 255, 0.18)" },
+                    "45%": { transform: "scale(1.06)", bgcolor: "rgba(255, 255, 255, 0.42)" },
+                    "100%": { transform: "scale(1)", bgcolor: "rgba(255, 255, 255, 0.18)" }
+                  }
+                }}>
+                <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: 0.4, textTransform: "uppercase" }}>
+                  Total Income
+                </Typography>
+                <Typography variant="h6" component="output" sx={{ fontWeight: 800, lineHeight: 1.1 }}>
+                  {totalIncome.toLocaleString("en-IN", { minimumFractionDigits: 0, maximumFractionDigits: 0, style: "currency", currency: "INR" })}
+                </Typography>
+              </Box>
+            )}
+          </Box>
         </Box>
       </Paper>
+
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+
+      {!loading && (
+        <Paper sx={{ p: { xs: 2, sm: 2.5 }, mb: 2.5, borderRadius: 2, overflow: "hidden" }}>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: {
+                xs: "1fr",
+                sm: "repeat(2, minmax(0, 1fr))",
+                md: "repeat(3, minmax(0, 1fr))"
+              },
+              gap: 1.5,
+              alignItems: "center",
+              width: "100%"
+            }}>
+
+            <TextField
+              select label="Month" value={month}
+              onChange={(event) => setMonth(event.target.value)}
+              fullWidth size="small">
+              <MenuItem value="0">All</MenuItem>
+              <MenuItem value="1">January</MenuItem>
+              <MenuItem value="2">February</MenuItem>
+              <MenuItem value="3">March</MenuItem>
+              <MenuItem value="4">April</MenuItem>
+              <MenuItem value="5">May</MenuItem>
+              <MenuItem value="6">June</MenuItem>
+              <MenuItem value="7">July</MenuItem>
+              <MenuItem value="8">August</MenuItem>
+              <MenuItem value="9">September</MenuItem>
+              <MenuItem value="10">October</MenuItem>
+              <MenuItem value="11">November</MenuItem>
+              <MenuItem value="12">December</MenuItem>
+            </TextField>
+            <TextField
+              select
+              label="Year"
+              value={year}
+              onChange={(event) => setYear(event.target.value)}
+              size="small"
+              fullWidth>
+              {years.map((availableYear) => (
+                <MenuItem key={availableYear} value={String(availableYear)}>{availableYear}</MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              select
+              label="Branch"
+              value={branchId}
+              onChange={(event) => setBranchId(Number(event.target.value))}
+              size="small"
+              fullWidth>
+              {branches.map((branch) => (
+                <MenuItem key={branch.id} value={branch.id}>
+                  {branch.friendlyName}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Box>
+        </Paper>
+      )}
 
       <Grid container spacing={{ xs: 2, md: 2.5 }}>
         <Grid size={{ xs: 12, md: 4 }}>
